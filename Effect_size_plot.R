@@ -1,18 +1,18 @@
-# EFFECTO---------------
-#CTmax
+####################
+# EFFECT SIZE PLOT
+####################
+
+library(reshape2)
+library(ggplotify)
+library(gridExtra)
+
+#CTmax --------------------------------------------------------------------------
 CTmax_genot<-read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/CTmax_snp_geno.csv", header = T,sep =";",check.names = F)
 CTmax_snp_genes <- read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/CTmax_SNP.csv", header = T,sep =";")
 
 for (i in 3:ncol(CTmax_genot)){
   CTmax_genot[,i] <- as.factor(CTmax_genot[,i]) 
 }
-
-library(ggplot2)
-library(ggplotify)
-library(reshape2)
-library(gridExtra)
-library(ggpubr)
-library(RColorBrewer)
 
 CTmax_genot_melt <- melt(CTmax_genot[,-1])
 lista_graficos <- list()
@@ -34,23 +34,15 @@ for (i in 1:8){
   lista_graficos[[nombre_grafico]] <- grob_grafico
 }
 
-#png(file="CTmax_snp_eff.png",width=3000, height=1500, res = 300)
 effect_ctmax_plot <- grid.arrange(grobs=c(c(lista_graficos[1:8])), ncol=4,left=("CTmax(°C)"))
-#dev.off()
 
-#Z
+#Z ------------------------------------------------------------------------------
 z_genot <- read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/Z_snp_geno.csv", header = T,sep =";",check.names = F)
 z_snp_genes <- read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/Z_SNP.csv", header = T,sep =";")
 
 for (i in 3:ncol(z_genot)){
   z_genot[,i] <- as.factor(z_genot[,i]) 
 }
-
-library(ggplot2)
-library(ggplotify)
-library(gridExtra)
-library(ggpubr)
-library(RColorBrewer)
 
 z_genot_melt <- melt(z_genot[,-1])
 lista_graficos <- list()
@@ -73,11 +65,6 @@ for (i in 1:8){
   lista_graficos[[nombre_grafico]] <- grob_grafico
 }
 
-# png(file="Z_snp_eff.png",width=3000, height=1500, res = 300)
 effect_z_plot <- grid.arrange(grobs=c(c(lista_graficos[1:8])), ncol=4,left=("z(°C/min)"))
-# dev.off()
 
-png(file="ctmax_Z_snp_eff.png",width=3000, height=2500, res = 300)
 ggarrange(effect_ctmax_plot, effect_z_plot, labels=c("A","B"), ncol=1, nrow=2)
-dev.off()
------------------------- 
