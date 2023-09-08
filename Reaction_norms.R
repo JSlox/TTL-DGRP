@@ -1,8 +1,8 @@
 ###########3###################################
-# Make reaction norms by temperatures and sexes
+# MAKE REACTION NORMS BY TEMPERATURES AND SEXES
 ###############################################
 
-# Read data ----------------
+# READ DATA -------------------------------------------------------------------
 library(readxl)
 data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/KO_4temp_100DGRP.xlsx")
 
@@ -27,7 +27,7 @@ DGRP39.male <- tapply(subset(data39, sex == "M")$KO, subset(data39, sex == "M")$
 DGRP40.female <- tapply(subset(data40, sex == "F")$KO, subset(data40, sex == "F")$DGRP,mean)
 DGRP40.male <- tapply(subset(data40, sex == "M")$KO, subset(data40, sex == "M")$DGRP,mean)
 
-# REACTION NORMS-----------------------
+# REACTION NORMS---------------------------------------------------------------
 
 # Females
 par(mfrow=c(1,2))
@@ -65,7 +65,7 @@ legend("topright", bty = "n",legend = "Males", text.col = "dodgerblue1", x.inter
 
 #####################################
 
-# sex by temperature
+# sex by temperature -----------------------------------------------------------
 par(mar = c(5, 4, 1, 2) + 0.1)
 plot(c(0.7, 4.3), c(10, 150), type = "n", axes = FALSE, xlab = "", ylab = "")
 
