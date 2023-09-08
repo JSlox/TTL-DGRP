@@ -3,8 +3,8 @@
 ###############################################
 
 # Read data ----------------
-setwd("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/Github_TTL_DGRP/Data")
-data <- read_excel("KO_4temp_100DGRP.xlsx")
+library(readxl)
+data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/KO_4temp_100DGRP.xlsx")
 
 data$DGRP <- as.factor(data$DGRP)
 data$temp <- as.factor(data$temp)
@@ -47,7 +47,6 @@ title(ylab = "Knockdown time (min)", cex.lab = 2, mgp = c(2.5, 0, 0))
 title(xlab = "Temperature (°C)", cex.lab = 2, mgp = c(3.5, 0, 0))
 legend("topright", bty = "n",legend = "Females", text.col = "firebrick1", x.intersp = 0.5, y.intersp = 1, cex = 2)
 
-
 # Males
 par(mar = c(5, 1, 1, 2) + 0.1)
 plot(c(1, 4.05), c(10, 150), type = "n", axes = FALSE, xlab = "", ylab = "")
@@ -64,6 +63,7 @@ box(bty = "l")
 title(xlab = "Temperature (°C)", cex.lab = 2, mgp = c(3.5, 0, 0))
 legend("topright", bty = "n",legend = "Males", text.col = "dodgerblue1", x.intersp = 0.5, y.intersp = 1, cex = 2)
 
+#####################################
 
 # sex by temperature
 par(mar = c(5, 4, 1, 2) + 0.1)
