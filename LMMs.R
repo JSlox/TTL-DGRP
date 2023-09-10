@@ -1,4 +1,6 @@
-# MODELOS LINEALES -----------------
+######################
+# LINEAL MIXED MODELS
+######################
 
 full.model <- lmer(KO ~ temp + sex + Bloque +temp:sex + (1|DGRP) +(1|DGRP:temp) + (1|DGRP:sex) + (1|DGRP:temp:sex), data = data)
 summary(full.model)
@@ -24,18 +26,8 @@ anova(males.model)
 # 37°C models
 temp37.model <- lmer(KO ~ sex +Bloque + (1|DGRP) + (1|DGRP:sex), data = subset(data,temp=="37"))
 summary(temp37.model)
-rand(temp37.model) # best model is obtained if DGRPxSEX is considered
+rand(temp37.model)
 anova(temp37.model)
-
-test0 <- aov(KO ~ DGRP, data = subset(subset(data,sex=="M"),temp=="38"))
-#test1 <- lm(KO ~ DGRP, data = subset(subset(DGRP_data,sex=="M"),temp=="37"))
-anova(test0)
-summary(test0)
-summary(test1)
-power.anova.test(groups=100, n=5, between.var=89832, within.var=907.40,   sig.level=0.05)#37
-power.anova.test(groups=40,  n=5, between.var=818.37, within.var=92.35,   sig.level=0.05)#38
-power.anova.test(groups=40,  n=5, between.var=204.98, within.var=21.97,   sig.level=0.05)#39
-power.anova.test(groups=40,  n=5, between.var=41.768, within.var=5.483,   sig.level=0.05)#40
 
 temp37females.model <- lmer(KO ~ Bloque +(1|DGRP), data = subset(subset(data,temp=="37"),sex=="F"))
 summary(temp37females.model)
