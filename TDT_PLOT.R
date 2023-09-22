@@ -6,7 +6,7 @@
 library(readxl)
 data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/KO_4temp_100DGRP.xlsx")
 
-data$DGRP <- as.factor(data$DGRP)
+data$Geno <- as.factor(data$Geno)
 data$temp <- as.factor(data$temp)
 data$sex <- as.factor(data$sex)
 data$Bloque <- as.factor(data$Bloque)
@@ -20,15 +20,15 @@ TDT_table <- TDT(data)
 TDT_table$sex <- as.factor(TDT_table$sex)
 
 # MAKE TABLE WITH MEAN OF KO TIME BY LINE, SEX AND TEMPERATURE ----------------
-rep.statics <- 10^with(data,tapply(log10(KO),list(temp,DGRP,sex),mean))	#geometric mean for each replicate
+rep.statics <- 10^with(data,tapply(log10(KO),list(temp,Geno,sex),mean))	#geometric mean for each replicate
 out <- matrix(,800,1)
 for(i in 1:800){out[i,1] <- rep.statics[(i)]}
 colnames(out) <- c("TimeKO")
 sex <- factor(rep(c(1,2),each=400),labels=c("females","males"))
-DGRP <- c(levels(data$DGRP))
-DGRP <- factor(rep(c(1:100),each=4,2),labels=DGRP)
+Geno <- c(levels(data$Geno))
+Geno <- factor(rep(c(1:100),each=4,2),labels=Geno)
 temp <- factor(rep(c(37:40),200))
-statics.rep <- data.frame(temp,DGRP,sex,out)
+statics.rep <- data.frame(temp,Geno,sex,out)
 data.F <- statics.rep[which(statics.rep[,"sex"]=="females"),]
 data.M <- statics.rep[which(statics.rep[,"sex"]=="males"),]
 
