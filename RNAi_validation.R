@@ -1,13 +1,3 @@
-library(lme4) # linear mixed model
-library(lmerTest) # singnificance of random effects
-library(RColorBrewer)
-library(ggplot2)
-library(reshape2)
-library(rstatix)
-library(dplyr)
-library(gridExtra)
-library(ggplotify)
-
 ################
 # RNAi ANALYSIS 
 ################
@@ -39,7 +29,6 @@ dataKCNQ2 <- droplevels(subset(data,Geno=="KCNQ-attp2"|Geno=="CONTROL-attp2"))
 
 
 # THERMAL LANDSCAPE --------------------------------
-
 # CTMAX AND Z
 source("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/TTL-DGRP/Thermal_landscape.R")
 
@@ -61,89 +50,7 @@ TDT_table_R3 <- cbind(TDT_table_R3,Replica)
 TDT_full <- rbind(TDT_table_R1,TDT_table_R2,TDT_table_R3)
 TDT_full$sex <- as.factor(TDT_full$sex)
 
-##sexes comparison of CTmax and z
-
-#CTmax
-shapiro.test(TDT_full$CTmax)
-fligner.test(TDT_full$CTmax,TDT_full$sex)
-wilcox.test(subset(TDT_full, sex=="F")$CTmax, subset(TDT_full, sex=="M")$CTmax, alternative = "two.sided")
-
-#Z
-shapiro.test(TDT_full$Z)
-fligner.test(TDT_full$Z,TDT_full$sex)
-wilcox.test(subset(TDT_full, sex=="F")$Z, subset(TDT_full, sex=="M")$Z, alternative = "two.sided")
-
-cor(TDT_full$CTmax,TDT_full$Z)
-anova(manova(cbind(CTmax,Z)~sex, data= TDT_full))#no se cumplen supuestos
-summary(manova(cbind(CTmax,Z)~sex, data= TDT_full))# no se cumplen supuestos
-
-# Boxplot CTmax
-png(file="Box_CTmax.png",width=3000, height=1700, res = 300)
-plot(c(1, 4.05), c(0, 200), type = "n", axes = FALSE, xlab = "", ylab = "")
-boxplot(TDT_table$CTmax~TDT_table$sex, xlab = "", ylab="", 
-        col = brewer.pal(9, "Set1")[c(3, 1, 2,9)],  cex.axis=2, cex.lab=2.2, bty="n" )
-title(ylab = "CTmax", cex.lab = 2.2, mgp = c(2.6, 0, 0))
-title(xlab = "Sexo", cex.lab = 2.2, mgp = c(3.5, 0, 0))
-dev.off()
-
-# Boxplot Z
-png(file="Box_z.png",width=3000, height=1700, res = 300)
-plot(c(1, 4.05), c(0, 200), type = "n", axes = FALSE, xlab = "", ylab = "")
-boxplot(TDT_table$Z~TDT_table$sex, xlab = "", ylab="", 
-        col = brewer.pal(9, "Set1")[c(3, 1, 2,9)],  cex.axis=2, cex.lab=2.2, bty="n" )
-title(ylab = "Z", cex.lab = 2.2, mgp = c(2.6, 0, 0))
-title(xlab = "Sexo", cex.lab = 2.2, mgp = c(3.5, 0, 0))
-dev.off()
-
-# TDT PLOT
-rep.statics <- 10^with(data,tapply(log10(KO),list(temp,Geno,sex),mean))	#geometric mean for each replicate
-out <- matrix(,(nlevels(data$Geno)*8),1)
-for(i in 1:(nlevels(data$Geno)*8)){out[i,1] <- rep.statics[(i)]}
-colnames(out) <- c("TimeKO")
-sex <- factor(rep(c(1,2),each=(nlevels(data$Geno)*4)),labels=c("females","males"))
-Geno <- c(levels(data$Geno))
-Geno <- factor(rep(c(1:(nlevels(data$Geno))),each=4,2),labels=Geno)
-temp <- factor(rep(c(37:40),(nlevels(data$Geno)*2)))
-statics.rep <- data.frame(temp,Geno,sex,out)
-
-
-### TDT curve plot
-rep.statics <- 10^with(data,tapply(log10(KO),list(temp,Geno,sex),mean))	#geometric mean for each replicate
-data.F <- statics.rep[which(statics.rep[,"sex"]=="females"),]
-data.M <- statics.rep[which(statics.rep[,"sex"]=="males"),]
-head(data.F)
-head(data.M)
-
-# Females
-png(file="TDThembras.png",width=3000, height=1700, res = 300)
-plot(c(1, 4.05), c(0, 120),xlab="",ylab="",axes = FALSE,log="y",las=1,ylim=c(1,120),xlim=c(36,46),xaxs="i",yaxs="i")
-for(i in 1:9){
-  abline(lm(log10(data.F[(i*4-3):(i*4),4]) ~ c(37:40)),col="firebrick1", lwd=1)} 
-
-axis(side = 1, at = c(36,38,40,42,44,46,48,50,52,54), cex.axis = 2, mgp = c(3, 1, 0), lwd = 1)
-axis(side = 2, at = c(1,5,20,100), cex.axis = 2, mgp = c(3, 0.5, 0), lwd = 1)
-box(bty = "l")
-
-title(ylab = "Tiempo de colapso (min)", cex.lab = 2.2, mgp = c(2.5, 0, 0))
-title(xlab = "Temperatura (°C)", cex.lab = 2.2, mgp = c(3.5, 0, 0))
-dev.off()
-
-# Males
-png(file="TDTmachos.png",width=3000, height=1700, res = 300)
-plot(c(1, 4.05), c(0, 120),xlab="",ylab="",axes = FALSE,log="y",las=1,ylim=c(1,120),xlim=c(36,48),xaxs="i",yaxs="i")
-for(i in 1:9){
-  abline(lm(log10(data.M[(i*4-3):(i*4),4]) ~ c(37:40)),col="dodgerblue1", lwd=1)} 
-
-axis(side = 1, at = c(36,38,40,42,44,46,48,50,52,54), cex.axis = 2, mgp = c(3, 1, 0), lwd = 1)
-axis(side = 2, at = c(1,5,20,100), cex.axis = 2, mgp = c(3, 0.5, 0), lwd = 1)
-box(bty = "l")
-
-title(ylab = "Tiempo de colapso (min)", cex.lab = 2.2, mgp = c(2.5, 0, 0))
-title(xlab = "Temperatura (°C)", cex.lab = 2.2, mgp = c(3.5, 0, 0))
-dev.off()
-
-
-# LMM ON CTMAX AND Z -----------------------------------
+# LMM ON CTMAX AND Z ------------------------------------------
 
 #CTmax y Z
 
@@ -151,7 +58,6 @@ TDT_datarobo3 <- droplevels(subset(TDT_full,Geno=="robo3-attp40"|Geno=="CONTROL-
 TDT_datamam <- droplevels(subset(TDT_full,Geno=="mam-kk"|Geno=="CONTROL-kk"))
 TDT_datashot <- droplevels(subset(TDT_full,Geno=="shot-sh"|Geno=="CONTROL-sh"))
 TDT_dataKCNQ2 <- droplevels(subset(TDT_full,Geno=="KCNQ-attp2"|Geno=="CONTROL-attp2"))
-TDT_dataKCNQ40 <- droplevels(subset(TDT_full,Geno=="KCNQ-attp40"|Geno=="CONTROL-attp40"))
 
 # CTmax
 CTmax.robo3 <- lm(CTmax ~ Replica+Geno, data = subset(TDT_datarobo3,sex=="M"))
@@ -175,12 +81,6 @@ summary(CTmax.KCNQ2)
 anova(CTmax.KCNQ2)
 wilcox.test (subset(TDT_dataKCNQ2,sex=="F")$CTmax~subset(TDT_dataKCNQ2,sex=="F")$Geno,alternative = "two.sided", paired=F)
 wilcox.test (subset(TDT_dataKCNQ2,sex=="M")$CTmax~subset(TDT_dataKCNQ2,sex=="M")$Geno,alternative = "two.sided", paired=F)
-
-CTmax.KCNQ40 <- lm(CTmax ~ Replica+Geno, data = subset(TDT_dataKCNQ40,sex=="M"))
-summary(CTmax.KCNQ40)
-anova(CTmax.KCNQ40)
-wilcox.test (subset(TDT_dataKCNQ40,sex=="F")$CTmax~subset(TDT_dataKCNQ40,sex=="F")$Geno,alternative = "two.sided", paired=F)
-wilcox.test (subset(TDT_dataKCNQ40,sex=="M")$CTmax~subset(TDT_dataKCNQ40,sex=="M")$Geno,alternative = "two.sided", paired=F)
 
 # Z
 Z.robo3 <- lm(Z ~ Replica+Geno, data = subset(TDT_datarobo3,sex=="F"))
@@ -206,12 +106,6 @@ summary(Z.KCNQ2)
 anova(Z.KCNQ2)
 wilcox.test (subset(TDT_dataKCNQ2,sex=="F")$Z~subset(TDT_dataKCNQ2,sex=="F")$Geno,alternative = "two.sided", paired=F)
 wilcox.test (subset(TDT_dataKCNQ2,sex=="M")$Z~subset(TDT_dataKCNQ2,sex=="M")$Geno,alternative = "two.sided", paired=F)
-
-Z.KCNQ40 <- lm(Z ~ Replica+Geno, data = subset(TDT_dataKCNQ40,sex=="F"))
-summary(Z.KCNQ40)
-anova(Z.KCNQ40)
-wilcox.test (subset(TDT_dataKCNQ40,sex=="F")$Z~subset(TDT_dataKCNQ40,sex=="F")$Geno,alternative = "two.sided", paired=F)
-wilcox.test (subset(TDT_dataKCNQ40,sex=="M")$Z~subset(TDT_dataKCNQ40,sex=="M")$Geno,alternative = "two.sided", paired=F)
 
 # LMM ON KNOCKDOWN TIME PER SEX -----------------------------------
 # performs all lmm and save them in a text file called LMER_KO_PER_SEX.txt
