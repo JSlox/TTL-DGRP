@@ -4,6 +4,8 @@
 
 # READ DATA -------------------------------------------------------------------
 library(readxl)
+library(RColorBrewer)
+
 data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/KO_4temp_100DGRP.xlsx")
 
 data$Geno <- as.factor(data$Geno)
@@ -66,6 +68,7 @@ legend("topright", bty = "n",legend = "Males", text.col = "dodgerblue1", x.inter
 #####################################
 
 # sex by temperature -----------------------------------------------------------
+par(mfrow=c(1,1))
 par(mar = c(5, 4, 1, 2) + 0.1)
 plot(c(0.7, 4.3), c(10, 150), type = "n", axes = FALSE, xlab = "", ylab = "")
 
@@ -96,3 +99,4 @@ box(bty = "l")
 title(ylab = "Knockdown time (min)", cex.lab = 2, mgp = c(2.5, 0, 0))
 title(xlab = "Temperature (°C)", cex.lab = 2, mgp = c(3.5, 0, 0))
 legend("topright", bty = "n", pch = 21, col = c("firebrick1", "dodgerblue1"), pt.cex = 1.5, pt.bg = c("firebrick1", "dodgerblue1"), legend = c("Females", "Males"), text.col = c("firebrick1", "dodgerblue1"), x.intersp = 0.5, y.intersp = 1, cex = 2.2)
+
