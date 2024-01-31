@@ -11,6 +11,8 @@ library(stringr)
 library(ggpubr)
 library(tidyverse)
 library(gridExtra)
+library(lme4)
+library(lmerTest)
 setwd("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data")
 data <- read_excel("RNAi_validation.xlsx")
 
