@@ -148,6 +148,7 @@ dataKCNQ2$Geno = str_replace_all(dataKCNQ2$Geno,"KCNQ-attp2","RNAi")
 datashot$Geno = str_replace_all(dataKCNQ2$Geno,"CONTROL-sh","Control")
 datashot$Geno = str_replace_all(dataKCNQ2$Geno,"shot-sh","RNAi")
 
+# CTMAX
 # Prepare legend
 forlegend <- ggboxplot(subset(datamam,sex=="F"), x="temp", y="KO",fill="Geno",palette="Dark2", xlab="Temperature (°C)", 
                        ylab="Knockdown time (min)", ylim=c(15,125),

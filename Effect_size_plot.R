@@ -65,6 +65,9 @@ for (i in 1:8){
   lista_graficos[[nombre_grafico]] <- grob_grafico
 }
 
-effect_z_plot <- grid.arrange(grobs=c(c(lista_graficos[1:8])), ncol=4,left=("z(°C/min)"))
+effect_z_plot <- grid.arrange(grobs=c(c(lista_graficos[1:8])), ncol=4,left=("z(°C)"))
 
+
+png(file="Effect_box.png",width=3000, height=2500, res = 300)
 ggarrange(effect_ctmax_plot, effect_z_plot, labels=c("A","B"), ncol=1, nrow=2)
+dev.off()
