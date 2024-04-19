@@ -1,12 +1,9 @@
 ####################
 # EFFECT SIZE PLOT
 ####################
-
-library(reshape2)
-library(ggplot2)
-library(ggplotify)
-library(gridExtra)
-library(ggpubr)
+if (!require("pacman"))
+  install.packages("pacman")
+pacman::p_load(reshape2, ggplot2, ggplotify, gridExtra, ggpubr)
 
 #CTmax --------------------------------------------------------------------------
 CTmax_genot<-read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/CTmax_snp_geno.csv", header = T,sep =";",check.names = F)
