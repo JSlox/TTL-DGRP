@@ -2,12 +2,12 @@
 # RNAi ANALYSIS 
 ################
 
-# READ DATA -------------------------------------------------------------------
-
+#LOAD REQUIRED PACKAGES
 if (!require("pacman"))
   install.packages("pacman")
 pacman::p_load(readxl, reshape2, ggplot2, stringr, ggpubr, tidyverse, gridExtra, lme4, lmerTest)
 
+# READ DATA -------------------------------------------------------------------
 setwd("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data")
 data <- read_excel("RNAi_validation.xlsx")
 

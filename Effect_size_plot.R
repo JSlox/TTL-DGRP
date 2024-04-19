@@ -1,6 +1,8 @@
 ####################
 # EFFECT SIZE PLOT
 ####################
+
+#LOAD REQUIRED PACKAGES
 if (!require("pacman"))
   install.packages("pacman")
 pacman::p_load(reshape2, ggplot2, ggplotify, gridExtra, ggpubr)
