@@ -3,6 +3,10 @@
 ######################
 
 # READ DATA -------------------------------------------------------------------
+if (!require("pacman"))
+  install.packages("pacman")
+pacman::p_load(readxl, lme4, lmerTest)
+
 library(readxl)
 library(lme4) # linear mixed model
 library(lmerTest) # singnificance of random effects

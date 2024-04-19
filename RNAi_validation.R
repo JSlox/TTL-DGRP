@@ -4,6 +4,10 @@
 
 # READ DATA -------------------------------------------------------------------
 
+if (!require("pacman"))
+  install.packages("pacman")
+pacman::p_load(readxl, reshape2, ggplot2, stringr, ggpubr, tidyverse, gridExtra, lme4, lmerTest)
+
 library(readxl)
 library(reshape2)
 library(ggplot2)

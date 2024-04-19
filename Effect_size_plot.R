@@ -3,8 +3,10 @@
 ####################
 
 library(reshape2)
+library(ggplot2)
 library(ggplotify)
 library(gridExtra)
+library(ggpubr)
 
 #CTmax --------------------------------------------------------------------------
 CTmax_genot<-read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/CTmax_snp_geno.csv", header = T,sep =";",check.names = F)
