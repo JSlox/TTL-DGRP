@@ -1,4 +1,4 @@
-###########3###################################
+###############################################
 # MAKE REACTION NORMS BY TEMPERATURES AND SEXES
 ###############################################
 
@@ -7,7 +7,7 @@ if (!require("pacman"))
   install.packages("pacman")
 pacman::p_load(readxl, RColorBrewer)
 
-# READ DATA -------------------------------------------------------------------
+# READ AND PREPARE DATA OF KO TIME -------------------------------------------------------------------
 data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/KO_4temp_100DGRP.xlsx")
 
 data$Geno <- as.factor(data$Geno)
@@ -34,15 +34,19 @@ DGRP40.male <- tapply(subset(data40, sex == "M")$KO, subset(data40, sex == "M")$
 # REACTION NORMS---------------------------------------------------------------
 
 # Females
-par(mfrow=c(1,2))
+# prepares graph area
+par(mfrow=c(1,2)) 
 par(mar = c(5, 4, 1, 2) + 0.1)
+# creates empty plot
 plot(c(1, 4.05), c(10, 150), type = "n", axes = FALSE, xlab = "", ylab = "")
 
+# Graph lines and points for the 4 temperatures
 for (i in 1:100) {
   points(c(1, 2, 3, 4), c(DGRP37.female[i], DGRP38.female[i], DGRP39.female[i], DGRP40.female[i]), type = "b", cex = 1, lwd=1 , pch = 21, col = "firebrick1")
   points(c(1, 2, 3, 4), c(DGRP37.female[i], DGRP38.female[i], DGRP39.female[i], DGRP40.female[i]), type = "p", cex = 1.2, pch = 21, bg = brewer.pal(9, "Set1")[c(3, 1, 2,9)], col = NA)
 }
 
+# axis and labels
 axis(side = 1, at = c(1, 2, 3,4), labels = c("37","38","39","40"), cex.axis = 2, mgp = c(3, 1, 0), lwd = 1)
 axis(side = 2, at = c(10,45,80,115,150), cex.axis = 2, mgp = c(3, 0.5, 0), lwd = 1)
 box(bty = "l")
@@ -70,30 +74,38 @@ legend("topright", bty = "n",legend = "Males", text.col = "dodgerblue1", x.inter
 #####################################
 
 # sex by temperature -----------------------------------------------------------
+
+# prepares graph area
 par(mfrow=c(1,1))
 par(mar = c(5, 4, 1, 2) + 0.1)
+# creates empty plot
 plot(c(0.7, 4.3), c(10, 150), type = "n", axes = FALSE, xlab = "", ylab = "")
 
+# Graph lines and points for the both sexes at 37°C
 for (i in 1:100) {
   points(c(0.7, 1.3), c(DGRP37.female[i], DGRP37.male[i]), type = "b", cex = 1, pch = 21, col = brewer.pal(9, "Set1")[3])
   points(c(0.7, 1.3), c(DGRP37.female[i], DGRP37.male[i]), type = "p", cex = 1.2, pch = 21, bg = c("firebrick1", "dodgerblue1"), col = NA)
 }
 
+# Graph lines and points for the both sexes at 38°C
 for (i in 1:100) {
   points(c(1.7, 2.3), c(DGRP38.female[i], DGRP38.male[i]), type = "b", cex = 1, pch = 21, col = brewer.pal(9, "Set1")[1])
   points(c(1.7, 2.3), c(DGRP38.female[i], DGRP38.male[i]), type = "p", cex = 1.2, pch = 21, bg = c("firebrick1", "dodgerblue1"), col = NA)
 }
 
+# Graph lines and points for the both sexes at 39°C
 for (i in 1:100) {
   points(c(2.7, 3.3), c(DGRP39.female[i], DGRP39.male[i]), type = "b", cex = 1, pch = 21, col = brewer.pal(9, "Set1")[2])
   points(c(2.7, 3.3), c(DGRP39.female[i], DGRP39.male[i]), type = "p", cex = 1.2, pch = 21, bg = c("firebrick1", "dodgerblue1"), col = NA)
 }
 
+# Graph lines and points for the both sexes at 40°C
 for (i in 1:100) {
   points(c(3.7, 4.3), c(DGRP40.female[i], DGRP40.male[i]), type = "b", cex = 1, pch = 21, col = brewer.pal(9, "Set1")[9])
   points(c(3.7, 4.3), c(DGRP40.female[i], DGRP40.male[i]), type = "p", cex = 1.2, pch = 21, bg = c("firebrick1", "dodgerblue1"), col = NA)
 }
 
+# axis and labels
 axis(side = 1, at = c(1, 2, 3,4), labels = c("37","38","39","40"), cex.axis = 2, mgp = c(3, 1, 0), lwd = 1)
 axis(side = 2, at = c(10,45,80,115,150), cex.axis = 2, mgp = c(3, 0.5, 0), lwd = 1)
 box(bty = "l")
@@ -101,4 +113,3 @@ box(bty = "l")
 title(ylab = "Knockdown time (min)", cex.lab = 2, mgp = c(2.5, 0, 0))
 title(xlab = "Temperature (°C)", cex.lab = 2, mgp = c(3.5, 0, 0))
 legend("topright", bty = "n", pch = 21, col = c("firebrick1", "dodgerblue1"), pt.cex = 1.5, pt.bg = c("firebrick1", "dodgerblue1"), legend = c("Females", "Males"), text.col = c("firebrick1", "dodgerblue1"), x.intersp = 0.5, y.intersp = 1, cex = 2.2)
-
