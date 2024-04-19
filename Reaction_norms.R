@@ -3,8 +3,9 @@
 ###############################################
 
 # READ DATA -------------------------------------------------------------------
-library(readxl)
-library(RColorBrewer)
+if (!require("pacman"))
+  install.packages("pacman")
+pacman::p_load(readxl, RColorBrewer)
 
 data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/KO_4temp_100DGRP.xlsx")
 

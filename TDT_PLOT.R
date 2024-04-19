@@ -3,7 +3,10 @@
 ###################################
 
 # READ DATA -------------------------------------------------------------------
-library(readxl)
+if (!require("pacman"))
+  install.packages("pacman")
+pacman::p_load(readxl)
+
 data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/KO_4temp_100DGRP.xlsx")
 
 data$Geno <- as.factor(data$Geno)
