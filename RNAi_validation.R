@@ -104,7 +104,35 @@ anova(Z.KCNQ2)
 wilcox.test (subset(TDT_dataKCNQ2,sex=="F")$Z~subset(TDT_dataKCNQ2,sex=="F")$Geno,alternative = "two.sided", paired=F)
 wilcox.test (subset(TDT_dataKCNQ2,sex=="M")$Z~subset(TDT_dataKCNQ2,sex=="M")$Geno,alternative = "two.sided", paired=F)
 
-# LMM ON KNOCKDOWN TIME PER SEX -----------------------------------
+# LMM ON KNOCKDOWN TIME PER TEMPERATURE FULL MODEL -----------------------------------
+# performs all lmm and save them in a text file called LMER_KO_PER_SEX.txt
+
+sink(file = "LMER_KO_FULL.txt")
+Genes <- list(datarobo3,datamam,datashot,dataKCNQ2)
+nombresGenes <- c("robo3","mam","shot","KCNQ")
+temperatures <- c("37","38","39","40")
+for (g in 1:length(Genes)){
+    for (t in temperatures){
+      cat("\n############################################\n")
+      cat("GENE: ",nombresGenes[g], "   TEMPERATURE: ",t)
+      cat("\n############################################\n")
+      modelo <- lmer(KO ~ Geno*sex+(1|Replica), data = subset(Genes[[g]],temp==t))
+      cat("\n######################## summary\n")
+      print(summary(modelo))
+      cat("\n######################## ANOVA\n")
+      print(anova(modelo))
+      cat("\n######################## RANDOM EFFECTS\n")
+      print(rand(modelo))
+      cat("\n######################## SHAPIRO TEST\n")
+      print(shapiro.test(resid(modelo)))
+      cat("\n######################## FLIGNER TEST\n")
+      print(fligner.test(KO ~ Geno, data = subset(Genes[[g]],temp==t)))
+  }
+}
+sink(file = NULL)
+
+
+# LMM ON KNOCKDOWN TIME PER TEMPERATURE AND SEX -----------------------------------
 # performs all lmm and save them in a text file called LMER_KO_PER_SEX.txt
 
 sink(file = "LMER_KO_PER_SEX.txt")
