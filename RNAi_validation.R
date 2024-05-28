@@ -57,52 +57,54 @@ TDT_datashot <- droplevels(subset(TDT_full,Geno=="shot-sh"|Geno=="CONTROL-sh"))
 TDT_dataKCNQ2 <- droplevels(subset(TDT_full,Geno=="KCNQ-attp2"|Geno=="CONTROL-attp2"))
 
 # CTmax
-CTmax.robo3 <- lm(CTmax ~ Replica+Geno, data = subset(TDT_datarobo3,sex=="M"))
-summary(CTmax.robo3)
-anova(CTmax.robo3)
-wilcox.test (subset(TDT_datarobo3,sex=="M")$CTmax~subset(TDT_datarobo3,sex=="M")$Geno,alternative = "two.sided", paired=F)
+# LMM ON CTMAX FULL MODEL -----------------------------------
+# performs all lmm and save them in a text file called LMER_CTMAX_FULL.txt
 
-CTmax.mam <- lm(CTmax ~ Replica+Geno, data = subset(TDT_datamam,sex=="M"))
-summary(CTmax.mam)
-anova(CTmax.mam)
-wilcox.test (subset(TDT_datamam,sex=="M")$CTmax~subset(TDT_datamam,sex=="M")$Geno,alternative = "two.sided", paired=F)
-
-CTmax.shot <- lm(CTmax ~ Replica+Geno, data = subset(TDT_datashot,sex=="M"))
-summary(CTmax.shot)
-anova(CTmax.shot)
-wilcox.test (subset(TDT_datashot,sex=="F")$CTmax~subset(TDT_datashot,sex=="F")$Geno,alternative = "two.sided", paired=F)
-wilcox.test (subset(TDT_datashot,sex=="M")$CTmax~subset(TDT_datashot,sex=="M")$Geno,alternative = "two.sided", paired=F)
-
-CTmax.KCNQ2 <- lm(CTmax ~ Replica+Geno, data = subset(TDT_dataKCNQ2,sex=="F"))
-summary(CTmax.KCNQ2)
-anova(CTmax.KCNQ2)
-wilcox.test (subset(TDT_dataKCNQ2,sex=="F")$CTmax~subset(TDT_dataKCNQ2,sex=="F")$Geno,alternative = "two.sided", paired=F)
-wilcox.test (subset(TDT_dataKCNQ2,sex=="M")$CTmax~subset(TDT_dataKCNQ2,sex=="M")$Geno,alternative = "two.sided", paired=F)
+sink(file = "LMER_CTMAX_FULL.txt")
+Genes <- list(TDT_datarobo3,TDT_datamam,TDT_datashot,TDT_dataKCNQ2)
+nombresGenes <- c("robo3","mam","shot","KCNQ")
+for (g in 1:length(Genes)){
+    cat("\n############################################\n")
+    cat("CTMAX   GENE: ",nombresGenes[g])
+    cat("\n############################################\n")
+    modelo <- lmer(CTmax ~ Geno*sex+(1|Replica), data = Genes[[g]])
+    cat("\n######################## summary\n")
+    print(summary(modelo))
+    cat("\n######################## ANOVA\n")
+    print(anova(modelo))
+    cat("\n######################## RANDOM EFFECTS\n")
+    print(rand(modelo))
+    cat("\n######################## SHAPIRO TEST\n")
+    print(shapiro.test(resid(modelo)))
+    cat("\n######################## FLIGNER TEST\n")
+    print(fligner.test(CTmax ~ Geno, data = Genes[[g]]))
+}
+sink(file = NULL)
 
 # Z
-Z.robo3 <- lm(Z ~ Replica+Geno, data = subset(TDT_datarobo3,sex=="F"))
-summary(Z.robo3)
-anova(Z.robo3)
-wilcox.test (subset(TDT_datarobo3,sex=="F")$Z~subset(TDT_datarobo3,sex=="F")$Geno,alternative = "two.sided", paired=F)
-wilcox.test (subset(TDT_datarobo3,sex=="M")$Z~subset(TDT_datarobo3,sex=="M")$Geno,alternative = "two.sided", paired=F)
+# LMM ON Z FULL MODEL -----------------------------------
+# performs all lmm and save them in a text file called LMER_Z_FULL.txt
 
-Z.mam <- lm(Z ~ Replica+Geno, data = subset(TDT_datamam,sex=="M"))
-summary(Z.mam)
-anova(Z.mam)
-wilcox.test (subset(TDT_datamam,sex=="F")$Z~subset(TDT_datamam,sex=="F")$Geno,alternative = "two.sided", paired=F)
-wilcox.test (subset(TDT_datamam,sex=="M")$Z~subset(TDT_datamam,sex=="M")$Geno,alternative = "two.sided", paired=F)
-
-Z.shot <- lm(Z ~ Replica+Geno, data = subset(TDT_datashot,sex=="F"))
-summary(Z.shot)
-anova(Z.shot)
-wilcox.test (subset(TDT_datashot,sex=="F")$Z~subset(TDT_datashot,sex=="F")$Geno,alternative = "two.sided", paired=F)
-wilcox.test (subset(TDT_datashot,sex=="M")$Z~subset(TDT_datashot,sex=="M")$Geno,alternative = "two.sided", paired=F)
-
-Z.KCNQ2 <- lm(Z ~ Replica+Geno, data = subset(TDT_dataKCNQ2,sex=="M"))
-summary(Z.KCNQ2)
-anova(Z.KCNQ2)
-wilcox.test (subset(TDT_dataKCNQ2,sex=="F")$Z~subset(TDT_dataKCNQ2,sex=="F")$Geno,alternative = "two.sided", paired=F)
-wilcox.test (subset(TDT_dataKCNQ2,sex=="M")$Z~subset(TDT_dataKCNQ2,sex=="M")$Geno,alternative = "two.sided", paired=F)
+sink(file = "LMER_z_FULL.txt")
+Genes <- list(TDT_datarobo3,TDT_datamam,TDT_datashot,TDT_dataKCNQ2)
+nombresGenes <- c("robo3","mam","shot","KCNQ")
+for (g in 1:length(Genes)){
+  cat("\n############################################\n")
+  cat("Z   GENE: ",nombresGenes[g])
+  cat("\n############################################\n")
+  modelo <- lmer(Z ~ Geno*sex+(1|Replica), data = Genes[[g]])
+  cat("\n######################## summary\n")
+  print(summary(modelo))
+  cat("\n######################## ANOVA\n")
+  print(anova(modelo))
+  cat("\n######################## RANDOM EFFECTS\n")
+  print(rand(modelo))
+  cat("\n######################## SHAPIRO TEST\n")
+  print(shapiro.test(resid(modelo)))
+  cat("\n######################## FLIGNER TEST\n")
+  print(fligner.test(Z ~ Geno, data = Genes[[g]]))
+}
+sink(file = NULL)
 
 # LMM ON KNOCKDOWN TIME PER TEMPERATURE FULL MODEL -----------------------------------
 # performs all lmm and save them in a text file called LMER_KO_PER_SEX.txt
