@@ -241,7 +241,7 @@ mamMales <-ggboxplot(subset(datamam,sex=="M"), x="temp", y="KO", fill="Geno", pa
             aes(x=x, y=y),
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=2, y=78),
-            aes(x=x, y=y, label="***"), size=3,
+            aes(x=x, y=y, label="**"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(2.7, 3.3), y=c(45, 45)),
             aes(x=x, y=y),
@@ -392,7 +392,7 @@ KCNQMales <-ggboxplot(subset(dataKCNQ2,sex=="M"), x="temp", y="KO", fill="Geno",
             aes(x=x, y=y),
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=2, y=80),
-            aes(x=x, y=y, label="***"), size=3,
+            aes(x=x, y=y, label="**"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(2.7, 3.3), y=c(47, 47)),
             aes(x=x, y=y),
@@ -425,7 +425,7 @@ shotFemales <-ggboxplot(subset(datashot,sex=="F"), x="temp", y="KO", fill="Geno"
             aes(x=x, y=y),
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=1, y=133),
-            aes(x=x, y=y, label="*"), size=3,
+            aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(1.7, 2.3), y=c(77, 77)),
             aes(x=x, y=y),
@@ -495,8 +495,7 @@ lay <- rbind(c(1,2),
              c(6,6),
              c(7,7))
 
-# combine graphs and save them in png file called rnai_all.png
-png(file="rnai_all.png",width=2200, height=3000, res = 300)
-grid.arrange(grobs=list(text_grob("Females",size=15),text_grob("Males",size=15),mam_final, KCNQ_final,robo3_final,shot_final,leyenda), 
+# combine graphs and save them in svg file called rnai_all.png
+plot_grid <- grid.arrange(grobs=list(text_grob("Females",size=15),text_grob("Males",size=15),mam_final, KCNQ_final,robo3_final,shot_final,leyenda), 
              layout_matrix=lay,left=text_grob("Knockdown time (min)", size=15,rot=90), heights=c(1,4,4,4,4.5,1))
-dev.off()
+ggsave(file="rnai_all.svg", plot=plot_grid, width=2200, height=3000, dpi = 300, units="px")
