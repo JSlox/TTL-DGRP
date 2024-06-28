@@ -2,7 +2,7 @@
 
 Scripts to analyse thermal tolerance landscape of 100 lines of the DGRP as shown in Soto et al. 2024.
 
-A summary of the various inputs and script needed:
+A summary of the various inputs and script needed:  
 INPUT ----- > SCRIPT  
 KO_4temp_100DGRP.xlsx -----> Reaction_norms.R.; TDT_PLOT.R; LMMs.R  
 ctmax_gwas.top.annot; z_gwas.top.annot -----> Minor_allele_vs_Effect_size_graph.R  
