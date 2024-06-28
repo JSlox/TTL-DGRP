@@ -8,8 +8,7 @@ if (!require("pacman"))
 pacman::p_load(readxl, reshape2, ggplot2, stringr, ggpubr, tidyverse, gridExtra, lme4, lmerTest)
 
 # READ DATA -------------------------------------------------------------------
-setwd("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data")
-data <- read_excel("RNAi_validation.xlsx")
+data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/RNAi_validation.xlsx")
 
 data$Geno <- as.factor(data$Geno)
 data$temp <- as.factor(data$temp)
