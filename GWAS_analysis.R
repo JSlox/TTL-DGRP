@@ -6,7 +6,7 @@
 
 # This script is to analyze GWAS from DGRP and link SNPs with genes using dgrp.fb557.annot
 
-# This script need a variant annotation file for Drodophila melanogaster (FB5.57) http://dgrp2.gnets.ncsu.edu/data.html
+# This script need a variant annotation file for Drosophila melanogaster (FB5.57) http://dgrp2.gnets.ncsu.edu/data.html
 # This script also need the file output "gwas.all.assoc" from the platform DGRP2 http://dgrp2.gnets.ncsu.edu/ 
 # The files used in the DGRP2 platform include: 37_DGRP2.csv, 38_DGRP2.csv, 39_DGRP2.csv, 40_DGRP2.csv, ctmax_DGRP2.csv and z_DGRP2.csv
 
