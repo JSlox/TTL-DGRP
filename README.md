@@ -1,5 +1,5 @@
 # TTL-DGRP
-```
+
 Scripts to analyse thermal tolerance landscape of 100 lines of the DGRP as shown in Soto et al. 2024\
 
 KO_4temp_100DGRP.xlsx ---> Reaction_norms.R\
@@ -12,8 +12,5 @@ Data file **KO_4temp_100DGRP.xlsx** contains all data from the thermal assays pe
 
 Script **Thermal_landscape.R** contains a function to calculate thermal tolerance landscape parameters (CTmax and Z)\
 
-
-
-```
 
 
