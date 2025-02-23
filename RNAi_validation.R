@@ -5,10 +5,10 @@
 #LOAD REQUIRED PACKAGES
 if (!require("pacman"))
   install.packages("pacman")
-pacman::p_load(readxl, reshape2, ggplot2, stringr, ggpubr, tidyverse, gridExtra, lme4, lmerTest)
+pacman::p_load(readxl, reshape2, ggplot2, stringr, ggpubr, tidyverse, gridExtra, lme4, lmerTest, RColorBrewer)
 
 # READ DATA -------------------------------------------------------------------
-data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/RNAi_validation.xlsx")
+data <- read_excel("RNAi_validation.xlsx")
 
 data$Geno <- as.factor(data$Geno)
 data$temp <- as.factor(data$temp)
@@ -26,7 +26,7 @@ dataKCNQ2 <- droplevels(subset(data,Geno=="KCNQ-attp2"|Geno=="CONTROL-attp2"))
 
 # THERMAL LANDSCAPE --------------------------------
 # CTMAX AND Z
-source("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/TTL-DGRP/Thermal_landscape.R")
+source("Thermal_landscape.R")
 
 R1_data <- droplevels(subset(data,Replica=="R1"))
 TDT_table_R1 <- TDT(R1_data)
@@ -80,6 +80,31 @@ for (g in 1:length(Genes)){
 }
 sink(file = NULL)
 
+# LMM ON CTmax PER SEX -----------------------------------
+# performs all lmm and save them in a text file called LMER_CTmax_PER_SEX.txt
+sink(file = "LMER_CTmax_PER_SEX.txt")
+Genes <- list(TDT_datarobo3,TDT_datamam,TDT_datashot,TDT_dataKCNQ2)
+nombresGenes <- c("robo3","mam","shot","KCNQ")
+for (g in 1:length(Genes)){
+  for (s in c("F","M")){
+    cat("\n############################################\n")
+    cat("GENE: ",nombresGenes[g],"   SEX: ",s)
+    cat("\n############################################\n")
+    modelo <- lmer(CTmax ~ Geno+(1|Replica), data = subset(Genes[[g]],sex==s))
+    cat("\n######################## summary\n")
+    print(summary(modelo))
+    cat("\n######################## ANOVA\n")
+    print(anova(modelo))
+    cat("\n######################## RANDOM EFFECTS\n")
+    print(rand(modelo))
+    cat("\n######################## SHAPIRO TEST\n")
+    print(shapiro.test(resid(modelo)))
+    cat("\n######################## FLIGNER TEST\n")
+    print(fligner.test(CTmax ~ Geno, data = subset(Genes[[g]],sex==s)))
+  }
+}
+sink(file = NULL)
+
 # Z
 # LMM ON Z FULL MODEL -----------------------------------
 # performs all lmm and save them in a text file called LMER_Z_FULL.txt
@@ -102,6 +127,31 @@ for (g in 1:length(Genes)){
   print(shapiro.test(resid(modelo)))
   cat("\n######################## FLIGNER TEST\n")
   print(fligner.test(Z ~ Geno, data = Genes[[g]]))
+}
+sink(file = NULL)
+
+# LMM ON z PER SEX -----------------------------------
+# performs all lmm and save them in a text file called LMER_z_PER_SEX.txt
+sink(file = "LMER_z_PER_SEX.txt")
+Genes <- list(TDT_datarobo3,TDT_datamam,TDT_datashot,TDT_dataKCNQ2)
+nombresGenes <- c("robo3","mam","shot","KCNQ")
+for (g in 1:length(Genes)){
+  for (s in c("F","M")){
+    cat("\n############################################\n")
+    cat("GENE: ",nombresGenes[g],"   SEX: ",s)
+    cat("\n############################################\n")
+    modelo <- lmer(Z ~ Geno+(1|Replica), data = subset(Genes[[g]],sex==s))
+    cat("\n######################## summary\n")
+    print(summary(modelo))
+    cat("\n######################## ANOVA\n")
+    print(anova(modelo))
+    cat("\n######################## RANDOM EFFECTS\n")
+    print(rand(modelo))
+    cat("\n######################## SHAPIRO TEST\n")
+    print(shapiro.test(resid(modelo)))
+    cat("\n######################## FLIGNER TEST\n")
+    print(fligner.test(Z ~ Geno, data = subset(Genes[[g]],sex==s)))
+  }
 }
 sink(file = NULL)
 
@@ -186,19 +236,23 @@ forlegend <- ggboxplot(subset(datamam,sex=="F"), x="temp", y="KO",fill="Geno",pa
 leyenda <- get_legend(forlegend)
 
 ## MAM
-mamFemales <-ggboxplot(subset(datamam,sex=="F"), x="temp", y="KO", fill="Geno", palette="Dark2", xlab="Temperature (°C)", 
-                       ylab="Knockdown time (min)", ylim=c(15,125),
-                       legend="right")+
-  labs(fill="mam")+
+mamFemales <- ggplot(subset(datamam,sex=="F"), aes(x=temp, y=KO, fill=Geno))+
+  geom_boxplot(lwd=0.5, outlier.shape = NA, width=0.9) +
+  theme_bw() +
+  scale_fill_brewer(palette = "Dark2")+
+  scale_y_continuous(limits= c(15,135),breaks = seq(25,125, by = 25))+
+  geom_point(shape = 16,position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.9), alpha = 0.4, size = 1) +
   theme(legend.title=element_text(size=20), legend.text = element_text(size=20),legend.position = "none")+
-  theme(axis.title = element_text(size=15),axis.text = element_text(size=15),
-        axis.title.y = element_blank(),
-        axis.title.x = element_blank(),axis.text.x = element_blank())+
-  geom_line(data=tibble(x=c(0.7, 1.3), y=c(126, 126)),
+  theme(panel.border = element_blank(), axis.line = element_line(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        axis.title = element_text(size=15),axis.text = element_text(size=15),
+        axis.title.y = element_blank(),axis.title.x = element_blank(),axis.text.x= element_blank(),
+        axis.text.y= element_text(colour="black"), axis.ticks = element_line(color = "black"))+
+  geom_line(data=tibble(x=c(0.7, 1.3), y=c(128, 128)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=1, y=129),
-            aes(x=x, y=y, label="ns"), size=3,
+  geom_text(data=tibble(x=1, y=132),
+            aes(x=x, y=y, label="*"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(1.7, 2.3), y=c(67, 67)),
             aes(x=x, y=y),
@@ -209,49 +263,53 @@ mamFemales <-ggboxplot(subset(datamam,sex=="F"), x="temp", y="KO", fill="Geno", 
   geom_line(data=tibble(x=c(2.7, 3.3), y=c(35, 35)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=3, y=38),
+  geom_text(data=tibble(x=3, y=39),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(3.7, 4.3), y=c(30, 30)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=4, y=33),
+  geom_text(data=tibble(x=4, y=34),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=3.5, y=125), 
             aes(x=x, y=y, label="mam"), size=5,
             inherit.aes=FALSE)
 
-mamMales <-ggboxplot(subset(datamam,sex=="M"), x="temp", y="KO", fill="Geno", palette="Dark2", xlab="Temperature (°C)", 
-                     ylab="Knockdown time (min)", ylim=c(15,125),
-                     legend="right")+
-  labs(fill="mam")+
+mamMales <-ggplot(subset(datamam,sex=="M"), aes(x=temp, y=KO, fill=Geno))+
+  geom_boxplot(lwd=0.5, outlier.shape = NA, width=0.9) +
+  theme_bw() +
+  scale_fill_brewer(palette = "Dark2")+
+  scale_y_continuous(limits= c(15,135),breaks = seq(25,125, by = 25))+
+  geom_point(shape = 16,position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.9), alpha = 0.4, size = 1) +
   theme(legend.title=element_text(size=20), legend.text = element_text(size=15),legend.position = "none")+
-  theme(axis.title = element_text(size=15),axis.text = element_text(size=15),
+  theme(panel.border = element_blank(), axis.line = element_line(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.title = element_text(size=15),axis.text = element_text(size=15),
         axis.title.y = element_blank(),axis.text.y = element_blank(),
-        axis.title.x = element_blank(),axis.text.x = element_blank())+
-  geom_line(data=tibble(x=c(0.7, 1.3), y=c(120, 120)),
+        axis.title.x = element_blank(),axis.text.x = element_blank(),axis.ticks = element_line(color = "black"))+
+  geom_line(data=tibble(x=c(0.7, 1.3), y=c(122, 122)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=1, y=123),
+  geom_text(data=tibble(x=1, y=126),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(1.7, 2.3), y=c(75, 75)),
+  geom_line(data=tibble(x=c(1.7, 2.3), y=c(76, 76)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=2, y=78),
-            aes(x=x, y=y, label="**"), size=3,
+  geom_text(data=tibble(x=2, y=79),
+            aes(x=x, y=y, label="***"), size=3,
             inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(2.7, 3.3), y=c(45, 45)),
+  geom_line(data=tibble(x=c(2.7, 3.3), y=c(46, 46)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=3, y=48),
-            aes(x=x, y=y, label="**"), size=3,
+  geom_text(data=tibble(x=3, y=49),
+            aes(x=x, y=y, label="***"), size=3,
             inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(3.7, 4.3), y=c(30, 30)),
+  geom_line(data=tibble(x=c(3.7, 4.3), y=c(32, 32)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=4, y=33),
+  geom_text(data=tibble(x=4, y=36),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=3.5, y=125), 
@@ -262,73 +320,81 @@ mam_final <- grid.arrange(mamFemales,mamMales,ncol=2, widths=c(1.2,1))
 
 
 # ROBO3
-robo3Female <- ggboxplot(subset(datarobo3,sex=="F"), x="temp", y="KO",fill="Geno",palette="Dark2", xlab="Temperature (°C)", 
-                         ylab="Knockdown time (min)", ylim=c(15,125),
-                         legend="right")+
-  labs(fill="robo3")+
+robo3Female <- ggplot(subset(datarobo3,sex=="F"), aes(x=temp, y=KO, fill=Geno))+
+  geom_boxplot(lwd=0.5, outlier.shape = NA, width=0.9) +
+  theme_bw() +
+  scale_fill_brewer(palette = "Dark2")+
+  scale_y_continuous(limits= c(15,135),breaks = seq(25,125, by = 25))+
+  geom_point(shape = 16,position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.9), alpha = 0.4, size = 1) +
   theme(legend.title=element_text(size=20),legend.text = element_text(size=15),legend.position = "none")+ # erase legend from females
-  theme(axis.title = element_text(size=15),axis.text = element_text(size=15),
-        axis.title.y = element_blank(),
+  theme(panel.border = element_blank(), axis.line = element_line(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.title = element_text(size=15),axis.text = element_text(size=15),axis.title.y = element_blank(),
+        axis.text.y= element_text(colour="black"), axis.ticks = element_line(color = "black"),
         axis.title.x = element_blank(),axis.text.x = element_blank())+
-  geom_line(data=tibble(x=c(0.7, 1.3), y=c(123, 123)),
+  geom_line(data=tibble(x=c(0.7, 1.3), y=c(125, 125)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=1, y=126),
+  geom_text(data=tibble(x=1, y=129),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(1.7, 2.3), y=c(75, 75)),
+  geom_line(data=tibble(x=c(1.7, 2.3), y=c(77, 77)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=2, y=78),
+  geom_text(data=tibble(x=2, y=81),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(2.7, 3.3), y=c(45, 45)),
+  geom_line(data=tibble(x=c(2.7, 3.3), y=c(47, 47)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=3, y=48),
+  geom_text(data=tibble(x=3, y=51),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(3.7, 4.3), y=c(30, 30)),
+  geom_line(data=tibble(x=c(3.7, 4.3), y=c(32, 32)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=4, y=33),
+  geom_text(data=tibble(x=4, y=36),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=3.5, y=125), 
             aes(x=x, y=y, label="robo3"), size=5,
             inherit.aes=FALSE)
 
-robo3male <- ggboxplot(subset(datarobo3,sex=="M"), x="temp", y="KO",fill="Geno",palette="Dark2", xlab="Temperature (°C)", 
-                       ylab="Knockdown time (min)", ylim=c(15,125),
-                       legend="right")+
-  labs(fill="robo3")+
+robo3male <- ggplot(subset(datarobo3,sex=="M"), aes(x=temp, y=KO, fill=Geno))+
+  geom_boxplot(lwd=0.5, outlier.shape = NA, width=0.9) +
+  theme_bw() +
+  scale_fill_brewer(palette = "Dark2")+
+  scale_y_continuous(limits= c(15,135),breaks = seq(25,125, by = 25))+
+  geom_point(shape = 16,position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.9), alpha = 0.4, size = 1) +
   theme(legend.title=element_text(size=20),legend.text = element_text(size=15),legend.position = "none")+
-  theme(axis.title = element_text(size=15),axis.text = element_text(size=15),
+  theme(panel.border = element_blank(), axis.line = element_line(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.title = element_text(size=15),axis.text = element_text(size=15),
         axis.title.y = element_blank(),axis.text.y = element_blank(),
-        axis.title.x = element_blank(),axis.text.x = element_blank())+
+        axis.title.x = element_blank(),axis.text.x = element_blank(),axis.ticks = element_line(color = "black"))+
   geom_line(data=tibble(x=c(0.7, 1.3), y=c(120, 120)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=1, y=123),
+  geom_text(data=tibble(x=1, y=124),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(1.7, 2.3), y=c(75, 75)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=2, y=78),
+  geom_text(data=tibble(x=2, y=79),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(2.7, 3.3), y=c(45, 45)),
+  geom_line(data=tibble(x=c(2.7, 3.3), y=c(47, 47)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=3, y=48),
+  geom_text(data=tibble(x=3, y=51),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(3.7, 4.3), y=c(30, 30)),
+  geom_line(data=tibble(x=c(3.7, 4.3), y=c(31, 31)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=4, y=33),
-            aes(x=x, y=y, label="*"), size=3,
+  geom_text(data=tibble(x=4, y=34),
+            aes(x=x, y=y, label="**"), size=3,
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=3.5, y=125), 
             aes(x=x, y=y, label="robo3"), size=5,
@@ -337,72 +403,80 @@ robo3male <- ggboxplot(subset(datarobo3,sex=="M"), x="temp", y="KO",fill="Geno",
 robo3_final <- grid.arrange(robo3Female,robo3male, ncol=2, widths=c(1.2,1))
 
 ## KCNQ
-KCNQFemales <-ggboxplot(subset(dataKCNQ2,sex=="F"), x="temp", y="KO", fill="Geno", palette="Dark2", xlab="Temperature (°C)", 
-                        ylab="Knockdown time (min)", ylim=c(15,125),
-                        legend="right")+
-  labs(fill="KCNQ")+
+KCNQFemales <-ggplot(subset(dataKCNQ2,sex=="F"), aes(x=temp, y=KO, fill=Geno))+
+  geom_boxplot(lwd=0.5, outlier.shape = NA, width=0.9) +
+  theme_bw() +
+  scale_fill_brewer(palette = "Dark2")+
+  scale_y_continuous(limits= c(15,135),breaks = seq(25,125, by = 25))+
+  geom_point(shape = 16,position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.9), alpha = 0.4, size = 1) +
   theme(legend.title=element_text(size=20), legend.text = element_text(size=15),legend.position = "none")+
-  theme(axis.title = element_text(size=15),axis.text = element_text(size=15),
-        axis.title.y = element_blank(),
+  theme(panel.border = element_blank(), axis.line = element_line(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.title = element_text(size=15),axis.text = element_text(size=15), axis.title.y = element_blank(),
+        axis.text.y= element_text(colour="black"), axis.ticks = element_line(color = "black"),
         axis.title.x = element_blank(),axis.text.x = element_blank())+
-  geom_line(data=tibble(x=c(0.7, 1.3), y=c(127, 127)),
+  geom_line(data=tibble(x=c(0.7, 1.3), y=c(129, 129)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=1, y=130),
+  geom_text(data=tibble(x=1, y=133),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(1.7, 2.3), y=c(67, 67)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=2, y=70),
+  geom_text(data=tibble(x=2, y=71),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(2.7, 3.3), y=c(40, 40)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=3, y=43),
+  geom_text(data=tibble(x=3, y=44),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(3.7, 4.3), y=c(28, 28)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=4, y=31),
+  geom_text(data=tibble(x=4, y=32),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=3.5, y=125), 
             aes(x=x, y=y, label="KCNQ"), size=5,
             inherit.aes=FALSE)
 
-KCNQMales <-ggboxplot(subset(dataKCNQ2,sex=="M"), x="temp", y="KO", fill="Geno", palette="Dark2", xlab="Temperature (°C)", 
-                      ylab="Knockdown time (min)", ylim=c(15,125),
-                      legend="right")+
-  labs(fill="KCNQ")+
+KCNQMales <-ggplot(subset(dataKCNQ2,sex=="M"), aes(x=temp, y=KO, fill=Geno))+
+  geom_boxplot(lwd=0.5, outlier.shape = NA, width=0.9) +
+  theme_bw() +
+  scale_fill_brewer(palette = "Dark2")+
+  scale_y_continuous(limits= c(15,135),breaks = seq(25,125, by = 25))+
+  geom_point(shape = 16,position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.9), alpha = 0.4, size = 1) +
   theme(legend.title=element_text(size=20), legend.text = element_text(size=15),legend.position = "none")+
-  theme(axis.title = element_text(size=15),axis.text = element_text(size=15),
+  theme(panel.border = element_blank(), axis.line = element_line(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.title = element_text(size=15),axis.text = element_text(size=15),
         axis.title.y = element_blank(),axis.text.y = element_blank(),
-        axis.title.x = element_blank(),axis.text.x = element_blank())+
+        axis.title.x = element_blank(),axis.text.x = element_blank(),axis.ticks = element_line(color = "black"))+
   geom_line(data=tibble(x=c(0.7, 1.3), y=c(110, 110)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=1, y=113),
+  geom_text(data=tibble(x=1, y=114),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(1.7, 2.3), y=c(77, 77)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=2, y=80),
-            aes(x=x, y=y, label="**"), size=3,
+            aes(x=x, y=y, label="***"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(2.7, 3.3), y=c(47, 47)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=3, y=50),
-            aes(x=x, y=y, label="**"), size=3,
+            aes(x=x, y=y, label="***"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(3.7, 4.3), y=c(31, 31)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=4, y=34),
+  geom_text(data=tibble(x=4, y=35),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=3.5, y=125), 
@@ -412,27 +486,72 @@ KCNQMales <-ggboxplot(subset(dataKCNQ2,sex=="M"), x="temp", y="KO", fill="Geno",
 KCNQ_final <- grid.arrange(KCNQFemales,KCNQMales, ncol=2, widths=c(1.2,1))
 
 ## SHOT
-shotFemales <-ggboxplot(subset(datashot,sex=="F"), x="temp", y="KO", fill="Geno", palette="Dark2", xlab="Temperature (°C)", 
-                        ylab="Knockdown time (min)", ylim=c(15,130),
-                        legend="right")+
-  labs(fill="shot")+
+shotFemales <-ggplot(subset(datashot,sex=="F"), aes(x=temp, y=KO, fill=Geno))+
+  geom_boxplot(lwd=0.5, outlier.shape = NA, width=0.9) +
+  theme_bw() +
+  xlab("Temperature (°C)")+
+  scale_fill_brewer(palette = "Dark2")+
+  scale_y_continuous(limits= c(15,135),breaks = seq(25,125, by = 25))+
+  geom_point(shape = 16,position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.9), alpha = 0.4, size = 1) +
   theme(legend.title=element_text(size=20), legend.text = element_text(size=15),legend.position = "none")+
-  theme(axis.title = element_text(size=15),axis.text = element_text(size=15),
-        axis.title.y = element_blank())+
-  scale_y_continuous(breaks = seq(25, 125, 25))+
-  geom_line(data=tibble(x=c(0.7, 1.3), y=c(130, 130)),
+  theme(panel.border = element_blank(), axis.line = element_line(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.title = element_text(size=15),axis.text = element_text(size=15),
+        axis.title.y = element_blank(),axis.text.y= element_text(colour="black"), axis.ticks = element_line(color = "black"),
+        axis.text.x= element_text(colour="black"))+
+  geom_line(data=tibble(x=c(0.7, 1.3), y=c(131, 131)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=1, y=133),
-            aes(x=x, y=y, label="ns"), size=3,
+  geom_text(data=tibble(x=1, y=134),
+            aes(x=x, y=y, label="*"), size=3,
             inherit.aes=FALSE)+
   geom_line(data=tibble(x=c(1.7, 2.3), y=c(77, 77)),
+            aes(x=x, y=y),
+            inherit.aes=FALSE)+
+  geom_text(data=tibble(x=2, y=81),
+            aes(x=x, y=y, label="ns"), size=3,
+            inherit.aes=FALSE)+
+  geom_line(data=tibble(x=c(2.7, 3.3), y=c(47, 47)),
+            aes(x=x, y=y),
+            inherit.aes=FALSE)+
+  geom_text(data=tibble(x=3, y=51),
+            aes(x=x, y=y, label="ns"), size=3,
+            inherit.aes=FALSE)+
+  geom_line(data=tibble(x=c(3.7, 4.3), y=c(31, 31)),
+            aes(x=x, y=y),
+            inherit.aes=FALSE)+
+  geom_text(data=tibble(x=4, y=35),
+            aes(x=x, y=y, label="ns"), size=3,
+            inherit.aes=FALSE)+
+  geom_text(data=tibble(x=3.5, y=130), 
+            aes(x=x, y=y, label="shot"), size=5,
+            inherit.aes=FALSE)
+
+shotMales <-ggplot(subset(datashot,sex=="M"), aes(x=temp, y=KO, fill=Geno))+
+  geom_boxplot(lwd=0.5, outlier.shape = NA, width=0.9) +
+  theme_bw() +
+  xlab("Temperature (°C)")+
+  scale_fill_brewer(palette = "Dark2")+
+  scale_y_continuous(limits= c(15,135), breaks = seq(25,125, by = 25))+
+  geom_point(shape = 16,position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.9), alpha = 0.4, size = 1) +
+  theme(legend.title=element_text(size=20), legend.text = element_text(size=15),legend.position = "none")+
+  theme(panel.border = element_blank(), axis.line = element_line(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.title = element_text(size=15),axis.text = element_text(size=15), axis.text.y= element_blank(),
+        axis.title.y = element_blank(),axis.text.x= element_text(colour="black"), axis.ticks = element_line(color = "black"))+
+  geom_line(data=tibble(x=c(0.7, 1.3), y=c(125, 125)),
+            aes(x=x, y=y),
+            inherit.aes=FALSE)+
+  geom_text(data=tibble(x=1, y=129),
+            aes(x=x, y=y, label="ns"), size=3,
+            inherit.aes=FALSE)+
+  geom_line(data=tibble(x=c(1.7, 2.3), y=c(76, 76)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=2, y=80),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(2.7, 3.3), y=c(47, 47)),
+  geom_line(data=tibble(x=c(2.7, 3.3), y=c(46, 46)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=3, y=50),
@@ -441,43 +560,7 @@ shotFemales <-ggboxplot(subset(datashot,sex=="F"), x="temp", y="KO", fill="Geno"
   geom_line(data=tibble(x=c(3.7, 4.3), y=c(31, 31)),
             aes(x=x, y=y),
             inherit.aes=FALSE)+
-  geom_text(data=tibble(x=4, y=34),
-            aes(x=x, y=y, label="ns"), size=3,
-            inherit.aes=FALSE)+
-  geom_text(data=tibble(x=3.5, y=130), 
-            aes(x=x, y=y, label="shot"), size=5,
-            inherit.aes=FALSE)
-
-shotMales <-ggboxplot(subset(datashot,sex=="M"), x="temp", y="KO", fill="Geno", palette="Dark2", xlab="Temperature (°C)", 
-                      ylab="Knockdown time (min)", ylim=c(15,130),
-                      legend="right")+
-  labs(fill="shot")+
-  theme(legend.title=element_text(size=20), legend.text = element_text(size=15),legend.position = "none")+
-  theme(axis.title = element_text(size=15),axis.text = element_text(size=15),
-        axis.title.y = element_blank(),axis.text.y = element_blank())+
-  scale_y_continuous(breaks = seq(25, 125, 25))+
-  geom_line(data=tibble(x=c(0.7, 1.3), y=c(125, 125)),
-            aes(x=x, y=y),
-            inherit.aes=FALSE)+
-  geom_text(data=tibble(x=1, y=128),
-            aes(x=x, y=y, label="ns"), size=3,
-            inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(1.7, 2.3), y=c(76, 76)),
-            aes(x=x, y=y),
-            inherit.aes=FALSE)+
-  geom_text(data=tibble(x=2, y=79),
-            aes(x=x, y=y, label="ns"), size=3,
-            inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(2.7, 3.3), y=c(46, 46)),
-            aes(x=x, y=y),
-            inherit.aes=FALSE)+
-  geom_text(data=tibble(x=3, y=49),
-            aes(x=x, y=y, label="ns"), size=3,
-            inherit.aes=FALSE)+
-  geom_line(data=tibble(x=c(3.7, 4.3), y=c(31, 31)),
-            aes(x=x, y=y),
-            inherit.aes=FALSE)+
-  geom_text(data=tibble(x=4, y=34),
+  geom_text(data=tibble(x=4, y=35),
             aes(x=x, y=y, label="ns"), size=3,
             inherit.aes=FALSE)+
   geom_text(data=tibble(x=3.5, y=130), 
