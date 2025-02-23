@@ -2,6 +2,8 @@
 # Plot Minor allele effect vs effect of SNP
 #############################################
 
+library(scales)
+
 # LOAD AND PREPARE DATA ------------------------------------------------------
 #CTmax
 ## load results from gwas.top.annot file
@@ -23,7 +25,8 @@ sub_effect_z <- sub_effect_z[,c("ID","MAF","AvgEff")]
 ## Change plot size and axis X acording to range of effect
 ## Change color of points too
 ## Change name of file
-
+par(mar=c(1,1,1,1))
+tiff(file="Avg_Effect_CTmax_z.tiff",units="px",width=2100, height=2000, res=300)
 layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1), # matriz and order of plots
        heights = c(3.5, 1), # Heights of the rows
        widths = c(1, 1)) # Widths of the columns
@@ -31,11 +34,11 @@ layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1), # matriz and order of plots
 par(mar=c(3.5,4,1,1))
 plot(c(-1,1), c(0, 0.5), type = "n", axes = FALSE, xlab = "", ylab = "")
 for (i in 1:nrow(sub_effect_CTmax)) {
-points(sub_effect_CTmax[i,3], sub_effect_CTmax[i,2], type = "p", cex = 2, lwd=2 , pch = 21, col = "black", bg="green3")
+points(sub_effect_CTmax[i,3], sub_effect_CTmax[i,2], type = "p", cex = 2, lwd=2 , pch = 21, col = alpha("black", 0.7), bg=alpha("green3", 0.5))
 }
 
 for (i in 1:nrow(sub_effect_z)) {
-  points(sub_effect_z[i,3], sub_effect_z[i,2], type = "p", cex = 2, lwd=2 , pch = 21, col = "black", bg="grey")
+  points(sub_effect_z[i,3], sub_effect_z[i,2], type = "p", cex = 2, lwd=2 , alpha=0.5, pch = 21, col = alpha("black", 0.7), bg=alpha("grey", 0.5))
 }
 
 axis(side = 1, at = c(-1.0,-0.5,0.0,0.5,1.0), labels = c("-1.0","-0.5","0.0","0.5","1.0"), cex.axis = 2, mgp = c(3, 1, 0), lwd = 1)
@@ -58,3 +61,4 @@ text(x=-0.9,y=0.65,labels=paste("Minor allele","increases CTmax",sep="\n"),pos=4
 text(x=0.9,y=0.65,labels=paste("Minor allele","decreases CTmax",sep="\n"),pos=2,cex=1.2)
 text(x=-0.9,y=0.15,labels=paste("Minor allele","decreases sensitivity",sep="\n"),pos=4,cex=1.2)
 text(x=0.9,y=0.15,labels=paste("Minor allele","increases sensitivity",sep="\n"),pos=2,cex=1.2)
+dev.off()
