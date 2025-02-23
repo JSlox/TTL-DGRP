@@ -8,7 +8,7 @@ if (!require("pacman"))
 pacman::p_load(readxl, lme4, lmerTest, glmmTMB,tidyr,dplyr)
 
 # READ DATA -------------------------------------------------------------------
-data <- read_excel("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/KO_4temp_100DGRP.xlsx")
+data <- read_excel("KO_4temp_100DGRP.xlsx")
 
 data$Geno <- as.factor(data$Geno)
 data$temp <- as.factor(data$temp)
@@ -17,22 +17,6 @@ data$Bloque <- as.factor(data$Bloque)
 data$Fecha <- as.factor(data$Fecha)
 data$Celda <- as.factor(data$Celda)
 data$KO <- as.numeric(data$KO/60)
-
-data3 <- data %>%
-  group_by(Geno,sex,temp) %>%
-  summarise(KO=mean(KO,na.rm=T), .groups="drop")
-
-data_wide <- data3 %>%
-  pivot_wider(
-    names_from = temp,
-    values_from = KO,
-    names_prefix = "KO_temp"
-  )
-
-modelomulti <- manova(
-  cbind(KO_temp37,KO_temp38,KO_temp39,KO_temp40)~sex+Geno, data=data_wide
-)
-summary(modelomulti)
 
 # LMMs ------------------------------------------------------------------------
 
