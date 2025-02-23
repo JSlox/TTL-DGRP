@@ -7,7 +7,7 @@ library(scales)
 # LOAD AND PREPARE DATA ------------------------------------------------------
 #CTmax
 ## load results from gwas.top.annot file
-effect_CTmax <- read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/ctmax_gwas.top.annot", sep = " ", header = T)
+effect_CTmax <- read.table("ctmax_gwas.top.annot", sep = " ", header = T)
 
 ## subset data (AvgMixedPval, DiffMixedPval, FemaleMixedPval or MaleMixedPval)
 sub_effect_CTmax <- subset(effect_CTmax, AvgMixedPval <= 1.00e-05)
@@ -15,7 +15,7 @@ sub_effect_CTmax <- sub_effect_CTmax[,c("ID","MAF","AvgEff")]
 #write.table(sub_effect_CTmax,"CTmax_effect.csv")
 
 ## same but for z
-effect_z <- read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/z_gwas.top.annot", sep = " ", header = T)
+effect_z <- read.table("z_gwas.top.annot", sep = " ", header = T)
 sub_effect_z <- subset(effect_z, AvgMixedPval <= 1.00e-05)
 sub_effect_z <- sub_effect_z[,c("ID","MAF","AvgEff")]
 #write.table(sub_effect_z,"Z_effect.csv")
