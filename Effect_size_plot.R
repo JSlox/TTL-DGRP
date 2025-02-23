@@ -9,8 +9,8 @@ pacman::p_load(reshape2, ggplot2, ggplotify, gridExtra, ggpubr)
 
 #CTmax --------------------------------------------------------------------------
 # Load data of CTmax and genotype per snp and snps effect size information 
-CTmax_genot<-read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/CTmax_snp_geno.csv", header = T,sep =";",check.names = F)
-CTmax_snp_genes <- read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/CTmax_SNP.csv", header = T,sep =";")
+CTmax_genot<-read.table("CTmax_snp_geno.csv", header = T,sep =";",check.names = F)
+CTmax_snp_genes <- read.table("CTmax_SNP.csv", header = T,sep =";")
 
 # prepare data
 for (i in 3:ncol(CTmax_genot)){
@@ -26,7 +26,8 @@ for (i in 1:8){
   propiedades_snp <- subset(CTmax_snp_genes,ID==colnames(CTmax_genot_melt[i]))
   grafico <- ggplot(subset(CTmax_genot_melt,!is.na(CTmax_genot_melt[,i])), aes(x=subset(CTmax_genot_melt[,i],!is.na(CTmax_genot_melt[,i])), y= value, color=subset(CTmax_genot_melt[,i],!is.na(CTmax_genot_melt[,i])))) +
     geom_boxplot() + theme(panel.background = element_blank(),
-                           legend.position = "none", 
+                           axis.text.y= element_text(colour="black"), axis.ticks = element_line(color = "black"),
+                           axis.text.x= element_text(colour="black"), legend.position = "none", 
                            panel.border = element_rect(colour = "black", fill=NA))+
     xlab(paste(colnames(CTmax_genot_melt[i]),propiedades_snp$Name,sep="\n")) +
     ylab("")+
@@ -43,8 +44,8 @@ for (i in 1:8){
 effect_ctmax_plot <- grid.arrange(grobs=c(c(lista_graficos[1:8])), ncol=4,left=("CTmax(°C)"))
 
 #Z ------------------------------------------------------------------------------
-z_genot <- read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/Z_snp_geno.csv", header = T,sep =";",check.names = F)
-z_snp_genes <- read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/Z_SNP.csv", header = T,sep =";")
+z_genot <- read.table("Z_snp_geno.csv", header = T,sep =";",check.names = F)
+z_snp_genes <- read.table("Z_SNP.csv", header = T,sep =";")
 
 for (i in 3:ncol(z_genot)){
   z_genot[,i] <- as.factor(z_genot[,i]) 
@@ -56,7 +57,8 @@ lista_graficos <- list()
 for (i in 1:8){
   propiedades_snp <- subset(z_snp_genes,ID==colnames(z_genot_melt[i]))
   grafico <- ggplot(subset(z_genot_melt,!is.na(z_genot_melt[,i])), aes(x=subset(z_genot_melt[,i],!is.na(z_genot_melt[,i])), y= value, color=subset(z_genot_melt[,i],!is.na(z_genot_melt[,i])))) +
-    geom_boxplot() + theme(panel.background = element_blank(),
+    geom_boxplot() + theme(panel.background = element_blank(),axis.text.y= element_text(colour="black"), axis.ticks = element_line(color = "black"),
+                           axis.text.x= element_text(colour="black"),
                            legend.position = "none", 
                            panel.border = element_rect(colour = "black", fill=NA))+
     xlab(paste(colnames(z_genot_melt[i]),propiedades_snp$Name,sep="\n")) +
@@ -74,4 +76,5 @@ for (i in 1:8){
 effect_z_plot <- grid.arrange(grobs=c(c(lista_graficos[1:8])), ncol=4,left=("z(°C)"))
 
 # arrange graphs for CTmax and z
-ggarrange(effect_ctmax_plot, effect_z_plot, labels=c("A","B"), ncol=1, nrow=2)
+effect_ctmax_z <- ggarrange(effect_ctmax_plot, effect_z_plot, labels=c("A","B"), ncol=1, nrow=2)
+ggsave(file="effect_ctmax_z.svg", plot=effect_ctmax_z, width=3000, height=2500, dpi = 300, units="px")
