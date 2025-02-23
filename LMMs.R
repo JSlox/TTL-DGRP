@@ -170,7 +170,7 @@ anova(male3940.model)
 
 
 # CALCULATE CTMAX AND Z FROM ORIGINAL DATA ------------------------------------
-source("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/TTL-DGRP/Thermal_landscape.R")
+source("Thermal_landscape.R")
 TDT_table <- TDT(data)
 TDT_table$sex <- as.factor(TDT_table$sex)
 
