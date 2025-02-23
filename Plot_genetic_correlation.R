@@ -8,7 +8,7 @@ if (!require("pacman"))
 pacman::p_load(ggpubr)
 
 # READ DATA -------------------------------------------------------------------
-data <- read.table("C:/Users/Juan/Documents/Postgrado/LAB_Bio_integrativa/Papers/Soto_etal_2022_TDT_DGRP/scripts/Data/Genetic_Correlation.txt", header=T)
+data <- read.table("Genetic_Correlation.txt", header=T)
 
 data$line <- as.factor(data$line)
 data$sex <- as.factor(data$sex)
